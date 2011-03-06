@@ -1,6 +1,4 @@
-cc.ObjectValidation = {
-  'private': {}
-};
+cc.createModule('ObjectValidation');
 
 cc.ObjectValidation.private.AbstractValidator = cc.class(function() {
   this.isValid = function(value) {
@@ -57,7 +55,7 @@ cc.ObjectValidation.ArrayValidator = cc.class(function() {
 
 cc.ObjectValidation.ObjectSchemeValidator = cc.class(function(scheme) {
   if(!new cc.ObjectValidation.private.SchemeValidator().isValid(scheme)) {
-    throw 'scheme is invalid';
+    throw new cc.private.WrongArgumentException('wrong scheme applied');
   }
   this.scheme = scheme;
   this.isValid = function(obj) {

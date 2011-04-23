@@ -1,4 +1,4 @@
-var cc = {
+cc = {
   'private' : {}
 };
 
@@ -58,15 +58,15 @@ cc.createModule = function(name) {
   cc[name] = new cc.Module();
 }
 
-cc.use = function(module, exclude) {
+cc.use = function(module, ref, exclude) {
   if(!(module instanceof cc.Module)) {
     throw new cc.private.WrongArgumentException('Module expected');
   }
   exclude = exclude || /^private$/;
-  var ref = window;
+  var ref = ref || window;
   for(var funcName in module) {
     if(!funcName.match(exclude)) {
-      window[funcName] = module[funcName];
+      ref[funcName] = module[funcName];
     }
   }
 }
@@ -89,12 +89,12 @@ cc.private.ModuleNotFoundException = cc.class(function(msg) {
 
 cc.private.WrongArgumentException = cc.class(function(msg) {
   this.name = 'WrongArgumentException';
-  this.msg = msg;
+  this.msg = 'required module ' + msg;
 }).cc.inherits(cc.private.Exception);
 
 cc.private.requires = function(moduleName) {
   if(!cc[moduleName]) {
-    throw new cc.private.ModuleNotFoundException('required module ' + moduleName);
+    throw new cc.private.ModuleNotFoundException(moduleName);
   }
 }
 

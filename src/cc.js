@@ -73,9 +73,9 @@ cc.use = function(module, ref, exclude) {
 
 cc.private.Exception = cc.class(function(msg) {
   this.msg = msg || '';
-  this.name = 'Exception';
+  this.e_type = 'Exception';
   this.toString = function() {
-    return 'Uncaught ' + this.name + ' with message "' + this.msg + '"';
+    return 'Uncaught ' + this.e_type + ' with message "' + this.msg + '"';
   };
   this.log = function() {
     console.log([this.toString(), this]);
@@ -83,13 +83,13 @@ cc.private.Exception = cc.class(function(msg) {
 });
 
 cc.private.ModuleNotFoundException = cc.class(function(msg) {
-  this.name = 'ModuleNotFoundException';
-  this.msg = msg;
+  this.e_type = 'ModuleNotFoundException';
+  this.msg = 'required module ' + msg;
 }).cc.inherits(cc.private.Exception);
 
 cc.private.WrongArgumentException = cc.class(function(msg) {
-  this.name = 'WrongArgumentException';
-  this.msg = 'required module ' + msg;
+  this.e_type = 'WrongArgumentException';
+  this.msg = msg;
 }).cc.inherits(cc.private.Exception);
 
 cc.private.requires = function(moduleName) {

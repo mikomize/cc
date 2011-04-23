@@ -1,4 +1,4 @@
-ModuleTest = TestCase("ModuleTest", {
+ModulesTest = TestCase("ModuleTest", {
   
   moduleName: "testModule",
   
@@ -9,11 +9,8 @@ ModuleTest = TestCase("ModuleTest", {
   },
   
   testRequires: function() {
-    try {
-      cc.private.requires(this.moduleName);
-    } catch(e) {
-      fail("Requires thrown exception");
-    }
+    var that = this;
+    assertNoException('testRequires', function() {cc.private.requires(that.moduleName)});
   },
   
   testRequiresNegative: function() {
@@ -21,7 +18,7 @@ ModuleTest = TestCase("ModuleTest", {
       cc.private.requires("wrong module name");
       fail("Requires should thrown exception");
     } catch(e) {
-      assertEquals("Triggering WrongArgumentException", e.toString(), new cc.private.ModuleNotFoundException("wrong module name").toString());
+      assertEquals("Triggering WrongArgumentException", e, new cc.private.ModuleNotFoundException("wrong module name"));
     }
   },
   
@@ -35,12 +32,12 @@ ModuleTest = TestCase("ModuleTest", {
     assertEquals("Checking imported method", testString, testNamespace['methodToCheck']());
   },
   
-  testUseThrowingException: function() {
+  testUseNegative: function() {
     try {
       cc.use();
       fail("Failed to trigger any exception");
     } catch(e) {
-      assertEquals("Triggering WrongArgumentException", e.toString(), new cc.private.WrongArgumentException("Module expected").toString());
+      assertEquals("Triggering WrongArgumentException", e, new cc.private.WrongArgumentException("Module expected"));
     }
   }
   

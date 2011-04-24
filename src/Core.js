@@ -54,6 +54,16 @@ cc.Module = cc.$class(function() {
   this.private = {};
 });
 
+cc.private.initAsModule = function() {
+  var temp = new cc.Module();
+  for(item in cc) {
+    temp[item] = cc[item];
+  };
+  cc = temp;
+};
+
+cc.private.initAsModule();
+
 cc.createModule = function(name) {
   cc[name] = new cc.Module();
 }

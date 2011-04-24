@@ -32,6 +32,12 @@ ModulesTest = TestCase("ModuleTest", {
     assertEquals("Checking imported method", testString, testNamespace['methodToCheck']());
   },
   
+  testUseCoreModule: function() {
+    var testNamespace = {};
+    cc.use(cc, testNamespace);
+    assertFunction("testUseCoreModule", testNamespace['use']);
+  },
+  
   testUseNegative: function() {
     try {
       cc.use();

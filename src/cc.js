@@ -2,7 +2,7 @@ cc = {
   'private' : {}
 };
 
-cc.class = function(func) {
+cc.$class = function(func) {
   if(func.cc === undefined) {
     func.cc = {};
   }
@@ -50,7 +50,7 @@ cc.func = function(func) {
   return func;
 }
 
-cc.Module = cc.class(function() {
+cc.Module = cc.$class(function() {
   this.private = {};
 });
 
@@ -71,7 +71,7 @@ cc.use = function(module, ref, exclude) {
   }
 }
 
-cc.private.Exception = cc.class(function(msg) {
+cc.private.Exception = cc.$class(function(msg) {
   this.msg = msg || '';
   this.e_type = 'Exception';
   this.toString = function() {
@@ -82,12 +82,12 @@ cc.private.Exception = cc.class(function(msg) {
   };
 });
 
-cc.private.ModuleNotFoundException = cc.class(function(msg) {
+cc.private.ModuleNotFoundException = cc.$class(function(msg) {
   this.e_type = 'ModuleNotFoundException';
   this.msg = 'required module ' + msg;
 }).cc.inherits(cc.private.Exception);
 
-cc.private.WrongArgumentException = cc.class(function(msg) {
+cc.private.WrongArgumentException = cc.$class(function(msg) {
   this.e_type = 'WrongArgumentException';
   this.msg = msg;
 }).cc.inherits(cc.private.Exception);

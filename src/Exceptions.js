@@ -1,11 +1,10 @@
-
 cc.createModule('Exceptions');
 
 cc.Exceptions.Exception = cc.private.Exception;
 cc.Exceptions.ModuleNotFoundException = cc.private.ModuleNotFoundException;
 cc.Exceptions.WrongArgumentException = cc.private.WrongArgumentException;
 
-cc.Exceptions.$try = cc.class(function(func, exceptions){
+cc.Exceptions.$try = cc.$class(function(func, exceptions){
   for(var exceptionClassName in exceptions) {
     if(!((new window[exceptionClassName]) instanceof cc.Exceptions.Exception)) {
       throw new cc.Exceptions.WrongArgumentException('Exception expected');

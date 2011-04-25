@@ -1,28 +1,77 @@
 ClassesTest = TestCase("ClassesTest", {
-  testCreateClass: function() {
-    var params = {
-      construct: function(a,b,msg) {
-        this.a = a;
-        this.b = b;
-        this.msg = msg;
+  
+  baseClassParams: {
+    construct: function(a,b,msg) {
+      this.a = a;
+      this.b = b;
+      this.msg = msg;
+    },
+    eval: function() {
+      return this.a+this.b;
+    },
+    getMsg: function() {
+      return this.msg;
+    },
+    doWhatIMean: function() {
+      return this.getMsg() + " " + this.eval();
+    }
+  },
+    
+  testCreateBaseClass: function() {
+    var that = this;
+    assertNoException('testCreateBaseClass', function() {cc.$class(that.baseClassParams)});
+  },
+  
+  testCreateInstance: function() {
+    var baseClass = cc.$class(this.baseClassParams);
+    var newInstance =  new baseClass(3, 4, 'sum is');
+    assertEquals('testCreateInstance', 'sum is 7', newInstance.doWhatIMean());
+  },
+  
+  testClassExtend: function() {
+    var baseClass = cc.$class(this.baseClassParams);
+    var extendedClassParams = {
+      'extends' : baseClass,
+      construct: function(a, b, c, msg) {
+        this.parent('construct', a, b, msg);
+        this.c = c;
       },
       eval: function() {
-        return this.a+this.b;
-      },
-      getMsg: function() {
-        return this.msg;
+        return this.parent('eval') + this.c;
       },
       doWhatIMean: function() {
-        return this.getMsg + " " + this.eval();
+        return 'modified ' + this.parent('doWhatIMean');
       }
-    }
-    var that = this;
-    //cc.$class(params);
-    //assertNoException('testCreateClass', function() {that.baseClass = cc.$class(params)});
+    };
+    var extendedClass = cc.$class(extendedClassParams);
+    var extendedClassInstance = new extendedClass(3,4,5, 'sum is');
+    assertEquals('testClassExtend', 'modified sum is 12', extendedClassInstance.doWhatIMean());
+    assertInstanceOf('testClassExtendInstanceOf', baseClass, extendedClassInstance);
+  },
+  
+  testClassImplements: function() {
+    var baseClass = cc.$class({
+      getMsg: function() {
+        return 'Says: ' + this.getHello();
+      },
+      getHello: function() {
+        return 'Hello!';
+      }
+    });
+    
+    var modifier = {
+      getHello: function() {
+        return 'no cze!';
+      }
+    };
+    var modifiedClass = cc.$class({
+      'extends': baseClass,
+      'implements': [modifier]
+    });
+    var modifiedClassInstance = new modifiedClass();
+    assertEquals('testClassImplements', 'Says: no cze!', modifiedClassInstance.getMsg());
   }
 });
-
-
 
 ModulesTest = TestCase("ModuleTest", {
   

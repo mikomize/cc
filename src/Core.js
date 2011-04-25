@@ -7,7 +7,7 @@ cc.$class = function(params) {
     throw new cc.private.WrongArgumentException('object expected');
   }
   var $class = function() {
-    for(param in params) {
+    for(var param in params) {
       if(param == 'extends' || param == 'implements') {
         continue;
       }
@@ -16,12 +16,12 @@ cc.$class = function(params) {
     if(this.construct) {
       this.construct.apply(this, arguments);
     }
-  }
+  };
   
   $class.prototype.constructor = $class;
   
-  if(params.extends) {
-    var parent = params.extends;
+  if(params['extends']) {
+    var parent = params['extends'];
     if(!(parent instanceof Function)) {
       throw new cc.private.WrongArgumentException('extends: function expected');
     }
@@ -33,16 +33,17 @@ cc.$class = function(params) {
   } else {
     $class.prototype = new $class
   }
-  if(params.implements) {
-    if(!(params.implements instanceof Array)) {
+  if(params['implements']) {
+    var implements = params['implements'];
+    if(!(implements instanceof Array)) {
       throw new cc.private.WrongArgumentException('implements: object expected');
     }
-    for(object in params.implements) {
-      if(!(object instanceof Object)) {
+    for(var object in implements) {
+      if(!(implements[object] instanceof Object)) {
         throw new cc.private.WrongArgumentException('implemented class has to be an object');
       }
-      for(var key in object) {
-        $class.prototype[key] = object[key]
+      for(var key in implements[object]) {
+        $class.prototype[key] = implements[object][key]
       }
     }
   }
@@ -63,12 +64,12 @@ cc.func = function(func) {
 }
 
 cc.Module = cc.$class({
-  private: {},
+  private: {}
 });
 
 cc.private.initAsModule = function() {
   var temp = new cc.Module();
-  for(item in cc) {
+  for(var item in cc) {
     temp[item] = cc[item];
   };
   cc = temp;
@@ -107,7 +108,7 @@ cc.private.Exception = cc.$class({
 });
 
 cc.private.ModuleNotFoundException = cc.$class({
-  extends: cc.private.Exception,
+  'extends': cc.private.Exception,
   e_type: 'ModuleNotFoundException',
   construct: function(module_name) {
     this.parent('construct', 'required module ' + module_name);
@@ -115,8 +116,8 @@ cc.private.ModuleNotFoundException = cc.$class({
 });
 
 cc.private.WrongArgumentException = cc.$class({
-  extends: cc.private.Exception,
-  e_type: 'WrongArgumentException',
+  'extends': cc.private.Exception,
+  e_type: 'WrongArgumentException'
 });
 
 cc.private.requires = function(moduleName) {

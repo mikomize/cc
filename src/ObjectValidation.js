@@ -31,7 +31,7 @@ cc.ObjectValidation.private.Optional = {
 
 cc.ObjectValidation.IntValidator = cc.$class({
   
-  extends: cc.ObjectValidation.private.AbstractValidator,
+  'extends': cc.ObjectValidation.private.AbstractValidator,
 
   isValid: function(value) {
     return this.parent('isValid', value) || 'number' === typeof(value);
@@ -40,7 +40,7 @@ cc.ObjectValidation.IntValidator = cc.$class({
 
 cc.ObjectValidation.StringValidator = cc.$class({
   
-  extends: cc.ObjectValidation.private.AbstractValidator,
+  'extends': cc.ObjectValidation.private.AbstractValidator,
   
   isValid: function(value) {
     return this.parent('isValid', value) || 'string' === typeof(value);
@@ -49,14 +49,14 @@ cc.ObjectValidation.StringValidator = cc.$class({
 
 cc.ObjectValidation.OptionalStringValidator = cc.$class({
   
-  extends: cc.ObjectValidation.StringValidator,
+  'extends': cc.ObjectValidation.StringValidator,
   
-  //implements: [cc.ObjectValidation.private.Optional]
+  'implements': [cc.ObjectValidation.private.Optional]
 });
 
 cc.ObjectValidation.ObjectValidator = cc.$class({
   
-  extends: cc.ObjectValidation.private.AbstractValidator,
+  'extends': cc.ObjectValidation.private.AbstractValidator,
   
   isValid: function(value) {
     return this.parent('isValid', value) || 'object' === typeof(value);
@@ -65,7 +65,7 @@ cc.ObjectValidation.ObjectValidator = cc.$class({
 
 cc.ObjectValidation.ArrayValidator = cc.$class({
   
-  extends: cc.ObjectValidation.ObjectValidator,
+  'extends': cc.ObjectValidation.ObjectValidator,
   
   isValid: function(value) {
     return this.parent('isValid', value) && Array == value.constructor;
@@ -75,7 +75,7 @@ cc.ObjectValidation.ArrayValidator = cc.$class({
 
 cc.ObjectValidation.ObjectSchemeValidator = cc.$class({
   
-  extends: cc.ObjectValidation.ObjectValidator,
+  'extends': cc.ObjectValidation.ObjectValidator,
   
   construct: function(scheme) {
     if(!new cc.ObjectValidation.private.SchemeValidator().isValid(scheme)) {

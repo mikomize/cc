@@ -2,40 +2,52 @@ cc = {
   'private' : {}
 };
 
-cc.$class = function(func) {
-  if(func.cc === undefined) {
-    func.cc = {};
+cc.$class = function(params) {
+  if(!(params instanceof Object)) {
+    throw new cc.private.WrongArgumentException('object expected');
   }
-  func.prototype = new func;
-  func.prototype.constructor = func;
-  func.prototype.parent = func.prototype;
-  func.prototype.parent = function(funcName) {
-    return this.parentClass[funcName].apply(this, Array.prototype.slice.apply(arguments, [1]));
-  };
-  func.prototype.initParent = function() {
-    return this.parentClass.apply(this, arguments);
-  };
-  func.cc.inherits = function(parent) {
-    if(!parent instanceof Function) {
-      throw new cc.private.WrongArgumentException('function expected');
+  var $class = function() {
+    for(param in params) {
+      if(param == 'extends' || param == 'implements') {
+        continue;
+      }
+      this[param] = params[param]
     }
-    func.prototype = new parent;
-    func.prototype.constructor = func;
-    func.prototype.parentClass = parent.prototype;
-    func.prototype.init = function() {};
-    return func;
+    if(this.construct) {
+      this.construct.apply(this, arguments);
+    }
   }
-  func.cc.implements = function(object) {
-    if(!object instanceof Object) {
-      throw new cc.private.WrongArgumentException('object expected');
+  
+  $class.prototype.constructor = $class;
+  
+  if(params.extends) {
+    var parent = params.extends;
+    if(!(parent instanceof Function)) {
+      throw new cc.private.WrongArgumentException('extends: function expected');
     }
-    for(var key in object) {
-      func.prototype[key] = object[key]
-    }
-    return func;
+    $class.prototype = new parent;
+    $class.prototype.parentClass = parent.prototype;
+    $class.prototype.parent = function(funcName) {
+      return this.parentClass[funcName].apply(this, Array.prototype.slice.apply(arguments, [1]));
+    };
+  } else {
+    $class.prototype = new $class
   }
-  return func;
-}
+  if(params.implements) {
+    if(!(params.implements instanceof Array)) {
+      throw new cc.private.WrongArgumentException('implements: object expected');
+    }
+    for(object in params.implements) {
+      if(!(object instanceof Object)) {
+        throw new cc.private.WrongArgumentException('implemented class has to be an object');
+      }
+      for(var key in object) {
+        $class.prototype[key] = object[key]
+      }
+    }
+  }
+  return $class;
+};
 
 cc.func = function(func) {
   if(!(func instanceof Function)) {
@@ -50,8 +62,8 @@ cc.func = function(func) {
   return func;
 }
 
-cc.Module = cc.$class(function() {
-  this.private = {};
+cc.Module = cc.$class({
+  private: {},
 });
 
 cc.private.initAsModule = function() {
@@ -79,28 +91,33 @@ cc.use = function(module, ref, exclude) {
       ref[funcName] = module[funcName];
     }
   }
-}
+};
 
-cc.private.Exception = cc.$class(function(msg) {
-  this.msg = msg || '';
-  this.e_type = 'Exception';
-  this.toString = function() {
+cc.private.Exception = cc.$class({
+  e_type: 'Exception',
+  construct: function(msg) {
+    this.msg = msg || '';
+  },
+  toString: function() {
     return 'Uncaught ' + this.e_type + ' with message "' + this.msg + '"';
-  };
-  this.log = function() {
+  },
+  log: function() {
     console.log([this.toString(), this]);
-  };
+  }
 });
 
-cc.private.ModuleNotFoundException = cc.$class(function(msg) {
-  this.e_type = 'ModuleNotFoundException';
-  this.msg = 'required module ' + msg;
-}).cc.inherits(cc.private.Exception);
+cc.private.ModuleNotFoundException = cc.$class({
+  extends: cc.private.Exception,
+  e_type: 'ModuleNotFoundException',
+  construct: function(module_name) {
+    this.parent('construct', 'required module ' + module_name);
+  }
+});
 
-cc.private.WrongArgumentException = cc.$class(function(msg) {
-  this.e_type = 'WrongArgumentException';
-  this.msg = msg;
-}).cc.inherits(cc.private.Exception);
+cc.private.WrongArgumentException = cc.$class({
+  extends: cc.private.Exception,
+  e_type: 'WrongArgumentException',
+});
 
 cc.private.requires = function(moduleName) {
   if(!cc[moduleName]) {

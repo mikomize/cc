@@ -1,3 +1,29 @@
+ClassesTest = TestCase("ClassesTest", {
+  testCreateClass: function() {
+    var params = {
+      construct: function(a,b,msg) {
+        this.a = a;
+        this.b = b;
+        this.msg = msg;
+      },
+      eval: function() {
+        return this.a+this.b;
+      },
+      getMsg: function() {
+        return this.msg;
+      },
+      doWhatIMean: function() {
+        return this.getMsg + " " + this.eval();
+      }
+    }
+    var that = this;
+    //cc.$class(params);
+    //assertNoException('testCreateClass', function() {that.baseClass = cc.$class(params)});
+  }
+});
+
+
+
 ModulesTest = TestCase("ModuleTest", {
   
   moduleName: "testModule",

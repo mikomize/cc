@@ -83,20 +83,6 @@ ModulesTest = TestCase("ModuleTest", {
     assertInstanceOf("Validating module type", cc.Module, cc[this.moduleName]);
   },
   
-  testRequires: function() {
-    var that = this;
-    assertNoException('testRequires', function() {cc.private.requires(that.moduleName)});
-  },
-  
-  testRequiresNegative: function() {
-    try {
-      cc.private.requires("wrong module name");
-      fail("Requires should thrown exception");
-    } catch(e) {
-      assertEquals("Triggering WrongArgumentException", e, new cc.private.ModuleNotFoundException("wrong module name"));
-    }
-  },
-  
   testUse: function() {
     var testString = "testString";
     cc[this.moduleName].methodToCheck = function() {
@@ -123,5 +109,3 @@ ModulesTest = TestCase("ModuleTest", {
   }
   
 });
-
-

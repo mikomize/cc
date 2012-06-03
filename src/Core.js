@@ -95,12 +95,12 @@ cc.use = function(module, ref, exclude) {
 };
 
 cc.private.Exception = cc.$class({
-  e_type: 'Exception',
+  label: 'Exception',
   construct: function(msg) {
     this.msg = msg || '';
   },
   toString: function() {
-    return 'Uncaught ' + this.e_type + ' with message "' + this.msg + '"';
+    return 'Uncaught ' + this.label + ' with message "' + this.msg + '"';
   },
   log: function() {
     console.log([this.toString(), this]);
@@ -109,7 +109,7 @@ cc.private.Exception = cc.$class({
 
 cc.private.ModuleNotFoundException = cc.$class({
   'extends': cc.private.Exception,
-  e_type: 'ModuleNotFoundException',
+  label: 'ModuleNotFoundException',
   construct: function(module_name) {
     this.parent('construct', 'required module ' + module_name);
   }
@@ -117,22 +117,69 @@ cc.private.ModuleNotFoundException = cc.$class({
 
 cc.private.WrongArgumentException = cc.$class({
   'extends': cc.private.Exception,
-  e_type: 'WrongArgumentException'
+  label: 'WrongArgumentException'
 });
 
-cc.private.requires = function(moduleName) {
-  if(!cc[moduleName]) {
-    throw new cc.private.ModuleNotFoundException(moduleName);
+cc.private.ExternalDependencyNotFoundException = cc.$class({
+  'extends': cc.private.Exception,
+  label: 'ExternalDependencyNotFoundException'
+});
+
+cc.externalDependency = function (dependency) {
+  switch (dependency) {
+    case 'Underscore': 
+      if ( _ === undefined ) {
+        throw new cc.private.ExternalDependencyNotFoundException();
+      }
+    break;
+    default:
+      throw new cc.private.WrongArgumentException('undefined external dependency');
   }
 }
 
+//underscore dependent
+
+cc.externalDependency('Underscore');
+
+cc.private.registredTodos = [];
+cc.private.providedModules = [];
+
+cc.private.checkIsReadyToFire = function (modules) {
+  return 0 == _.difference(modules, this.providedModules).length;
+};
+
+cc.require = function(modules, callback) {
+  if (!_.isArray(modules)) {
+    throw new cc.private.WrongArgumentException('expected array of required modules');
+  }
+  if (cc.private.checkIsReadyToFire(modules)) {
+    callback();
+  } else {
+    var tmp = {
+      'modules': modules,
+      'callback': callback
+    };
+    cc.private.registredTodos.push(tmp);
+  }
+};
+cc.provide = function (module) {
+  var toFire = [];
+  cc.private.providedModules.push(module);  
+  cc.private.registredTodos =  _.reject(cc.private.registredTodos, function(todo) {
+    if (cc.private.checkIsReadyToFire(todo.modules, todo.callback)) {
+      toFire.push(todo.callback);
+      return true;
+    }
+    return false;
+  }, this);
+  _.each(toFire, function (callback) {
+    callback();
+  });
+};
+
+//deprecated
 cc.private.getObjectLength = function(obj) {
-  if(!(obj instanceof Object)) {
-    throw 'is not an object';
-  }
-  var i = 0;
-  for(var key in obj) {
-    i++;
-  }
-  return i;
+  return _.size(obj);
 }
+
+cc.provide('cc.Core');

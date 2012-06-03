@@ -64,7 +64,12 @@ cc.func = function(func) {
 }
 
 cc.Module = cc.$class({
-  private: {}
+  private: {},
+  createModule: function (name) {  
+    var module = new cc.Module();
+    this[name] = module;
+    return module;
+  }
 });
 
 cc.private.initAsModule = function() {
@@ -74,8 +79,6 @@ cc.private.initAsModule = function() {
   };
   cc = temp;
 };
-
-cc.private.initAsModule();
 
 cc.createModule = function(name) {
   cc[name] = new cc.Module();
@@ -103,15 +106,15 @@ cc.private.Exception = cc.$class({
     return 'Uncaught ' + this.label + ' with message "' + this.msg + '"';
   },
   log: function() {
-    console.log([this.toString(), this]);
+    cc.log([this.toString(), this]);
   }
 });
 
 cc.private.ModuleNotFoundException = cc.$class({
   'extends': cc.private.Exception,
   label: 'ModuleNotFoundException',
-  construct: function(module_name) {
-    this.parent('construct', 'required module ' + module_name);
+  construct: function(moduleName) {
+    this.parent('construct', 'required module ' + moduleName);
   }
 });
 
@@ -125,16 +128,53 @@ cc.private.ExternalDependencyNotFoundException = cc.$class({
   label: 'ExternalDependencyNotFoundException'
 });
 
+cc.log = function (obj) {
+  if (console) {
+    console.log(obj);
+  }
+}
+
 cc.externalDependency = function (dependency) {
   switch (dependency) {
     case 'Underscore': 
-      if ( _ === undefined ) {
-        throw new cc.private.ExternalDependencyNotFoundException();
+      if ( window._ === undefined ) {
+        throw new cc.private.ExternalDependencyNotFoundException('Underscore not found');
+      }
+    break;
+    case 'Backbone': 
+      if ( window.Backbone === undefined ) {
+        throw new cc.private.ExternalDependencyNotFoundException('Backbone not found');
       }
     break;
     default:
-      throw new cc.private.WrongArgumentException('undefined external dependency');
+      throw new cc.private.WrongArgumentException('undefined external dependency:' + dependecy);
   }
+}
+
+cc.private.wired = {};
+cc.private.getWired = function (label) {
+   var res = cc.private.wired[label];
+   if (res === undefined) {
+     throw new cc.private.WrongArgumentException('undefined wire: '  + label);
+   }
+   return cc.private.wired[label];
+}
+
+cc.wire = function (label, obj) {
+  cc.private.wired[label] = obj;
+}
+
+cc.inject = function (label, context) {
+  var func;
+  context = context || this;
+  func = function () {
+    cc.private.getWired(label).apply(context, arguments);
+  }
+  return func;
+}
+
+cc.getInstance = function (label) {
+  return cc.private.getWired(label);
 }
 
 //underscore dependent

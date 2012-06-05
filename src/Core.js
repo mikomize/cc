@@ -80,6 +80,8 @@ cc.private.initAsModule = function() {
   cc = temp;
 };
 
+cc.private.initAsModule();
+
 cc.createModule = function(name) {
   cc[name] = new cc.Module();
 }

@@ -143,11 +143,6 @@ cc.externalDependency = function (dependency) {
         throw new cc.private.ExternalDependencyNotFoundException('Underscore not found');
       }
     break;
-    case 'Backbone': 
-      if ( window.Backbone === undefined ) {
-        throw new cc.private.ExternalDependencyNotFoundException('Backbone not found');
-      }
-    break;
     default:
       throw new cc.private.WrongArgumentException('undefined external dependency:' + dependecy);
   }

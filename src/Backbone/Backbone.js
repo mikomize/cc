@@ -1,5 +1,8 @@
-cc.require(['cc.Core', 'cc.Exceptions', 'cc.ObjectValidation'], function () {
-  cc.externalDependency('Backbone');
+if (window.Backbone != undefined) {
+  cc.provide('Backbone');
+}
+
+cc.require(['Backbone', 'cc.Core', 'cc.Exceptions', 'cc.ObjectValidation'], function () {
   cc.createModule('Backbone');
 
   cc.wire('Backbone.sync', Backbone.sync);
@@ -46,5 +49,4 @@ cc.require(['cc.Core', 'cc.Exceptions', 'cc.ObjectValidation'], function () {
   });
 
   cc.provide('cc.Backbone');
-
 });

@@ -100,12 +100,12 @@ cc.use = function(module, ref, exclude) {
 };
 
 cc.private.Exception = cc.$class({
-  label: 'Exception',
+  name: 'Exception',
   construct: function(msg) {
     this.msg = msg || '';
   },
   toString: function() {
-    return 'Uncaught ' + this.label + ' with message "' + this.msg + '"';
+    return 'Uncaught ' + this.name + ' with message "' + this.msg + '"';
   },
   log: function() {
     cc.log([this.toString(), this]);
@@ -114,7 +114,7 @@ cc.private.Exception = cc.$class({
 
 cc.private.ModuleNotFoundException = cc.$class({
   'extends': cc.private.Exception,
-  label: 'ModuleNotFoundException',
+  name: 'ModuleNotFoundException',
   construct: function(moduleName) {
     this.parent('construct', 'required module ' + moduleName);
   }
@@ -122,12 +122,12 @@ cc.private.ModuleNotFoundException = cc.$class({
 
 cc.private.WrongArgumentException = cc.$class({
   'extends': cc.private.Exception,
-  label: 'WrongArgumentException'
+  name: 'WrongArgumentException'
 });
 
 cc.private.ExternalDependencyNotFoundException = cc.$class({
   'extends': cc.private.Exception,
-  label: 'ExternalDependencyNotFoundException'
+  name: 'ExternalDependencyNotFoundException'
 });
 
 cc.log = function (obj) {
@@ -165,7 +165,7 @@ cc.inject = function (label, context) {
   var func;
   context = context || this;
   func = function () {
-    cc.private.getWired(label).apply(context, arguments);
+    return cc.private.getWired(label).apply(context, arguments);
   }
   return func;
 }

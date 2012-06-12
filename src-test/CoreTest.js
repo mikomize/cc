@@ -73,7 +73,7 @@ ClassesTest = TestCase("ClassesTest", {
   }
 });
 
-ModulesTest = TestCase("ModuleTest", {
+ModulesTest = TestCase("ModulesTest", {
   
   moduleName: "testModule",
   
@@ -98,14 +98,86 @@ ModulesTest = TestCase("ModuleTest", {
     cc.use(cc, testNamespace);
     assertFunction("testUseCoreModule", testNamespace['use']);
   },
-  
+ 
   testUseNegative: function() {
-    try {
-      cc.use();
-      fail("Failed to trigger any exception");
-    } catch(e) {
-      assertEquals("Triggering WrongArgumentException", e, new cc.private.WrongArgumentException("Module expected"));
-    }
+    assertException('testUseNegative', cc.use, 'WrongArgumentException'); 
   }
   
+});
+
+DependenciesTest = TestCase('DependenciesTest', {
+  
+  testRequire: function () {
+    assertNoException('testRequire', function () {
+      cc.require(['test1'], function () {
+        throw new cc.Exceptions.Exception();
+      });
+    });
+  },
+
+  testProvide: function () {
+    var a = 0;
+    cc.provide('test2');
+    cc.require(['test2'], function () {
+      a = 1;
+    });
+    assertEquals('testProvide "a" set to 1', 1, a);
+    cc.require(['test2', 'test3'], function () {
+      a = 3;
+      cc.provide('test4');
+    });
+    assertEquals('testProvide "a" havnt changed', 1, a);
+    cc.require(['test4'], function () {
+      a = 2;
+    });
+    assertEquals('testProvide "a" havnt changed either', 1, a);
+    cc.provide('test3');
+    assertEquals('testProvide "a" set to 2', 2, a);
+  },
+
+  testRequireNegative: function () {
+     assertException('testGetInstanceNegative', function () {
+       cc.require('someModule');
+     }, 'WrongArgumentException'); 
+  }
+
+});
+
+WireTest = TestCase('WireTest', {
+
+  wiredObject: {
+    func1: function () {
+      return 1;
+    },
+    
+    func2: function () {
+      return 2;
+    }
+  },
+
+  testGetInstance: function () {
+     cc.wire('testObj', this.wiredObject);
+     assertSame('testGetInstance', this.wiredObject, cc.getInstance('testObj'));
+  },
+
+  testGetInstanceNegative: function () {
+     assertException('testGetInstanceNegative', function () {
+       cc.getInstance('notDefinedObj');
+     }, 'WrongArgumentException'); 
+  },
+
+  testInject: function () {
+    var func = cc.inject('testInject');
+    cc.wire('testInject', this.wiredObject.func1);
+    assertEquals('testInject', 1, func());
+    cc.wire('testInject', this.wiredObject.func2);
+    assertEquals('testInject', 2, func());
+  },
+
+  testInjectNegative: function () {
+     assertException('testInjectNegative', function () {
+       cc.inject('notDefinedFunc')();
+     }, 'WrongArgumentException'); 
+  }
+
 });

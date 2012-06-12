@@ -32,6 +32,7 @@ cc.require(['Backbone', 'cc.Core', 'cc.Exceptions', 'cc.ObjectValidation'], func
   });
 
   cc.Backbone.Collection = Backbone.Collection.extend({
+    model: cc.Backbone.Model,
     sync: cc.inject('Backbone.sync'),
     parse: function (list) {
       var result = [];

@@ -1,4 +1,4 @@
-if (Backbone != undefined) {
+if (typeof(Backbone) != 'undefined') {
   cc.provide('Backbone');
 }
 

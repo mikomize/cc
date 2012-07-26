@@ -1,4 +1,4 @@
 //make
 find src | grep .js | xargs cat > cc.js
 //test
-java -jar /path/to/JsTestDriver/JsTestDriver.jar --port 42442 --tests all --browser firefox,/usr/bin/chromium-browser --preloadFiles --reset --captureConsole
+java -jar /path/to/JsTestDriver/JsTestDriver.jar --port 42442 --tests all --browser firefox,/usr/bin/chromium-browser --preloadFiles --reset --captureConsole --config js-test-driver.conf

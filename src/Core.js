@@ -139,7 +139,7 @@ cc.log = function (obj) {
 cc.externalDependency = function (dependency) {
   switch (dependency) {
     case 'Underscore': 
-      if ( window._ === undefined ) {
+      if ( _ === undefined ) {
         throw new cc.private.ExternalDependencyNotFoundException('Underscore not found');
       }
     break;

@@ -1,4 +1,4 @@
-if (window.Backbone != undefined) {
+if (Backbone != undefined) {
   cc.provide('Backbone');
 }
 

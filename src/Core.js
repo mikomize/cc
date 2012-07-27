@@ -2,6 +2,8 @@ cc = {
   'private' : {}
 };
 
+cc.noConstruct = function() {};
+
 cc.$class = function(params) {
   if(!(params instanceof Object)) {
     throw new cc.private.WrongArgumentException('object expected');
@@ -13,7 +15,7 @@ cc.$class = function(params) {
       }
       this[param] = params[param]
     }
-    if(this.construct) {
+    if(this.construct && !(arguments[0] instanceof cc.noConstruct)) {
       this.construct.apply(this, arguments);
     }
   };
@@ -25,13 +27,13 @@ cc.$class = function(params) {
     if(!(parent instanceof Function)) {
       throw new cc.private.WrongArgumentException('extends: function expected');
     }
-    $class.prototype = new parent;
+    $class.prototype = new parent(new cc.noConstruct());
     $class.prototype.parentClass = parent.prototype;
     $class.prototype.parent = function(funcName) {
       return this.parentClass[funcName].apply(this, Array.prototype.slice.apply(arguments, [1]));
     };
   } else {
-    $class.prototype = new $class
+    $class.prototype = new $class(new cc.noConstruct());
   }
   if(params['implements']) {
     var implements = params['implements'];

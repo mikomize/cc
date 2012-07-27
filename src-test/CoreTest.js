@@ -1,10 +1,11 @@
 ClassesTest = TestCase("ClassesTest", {
   
   baseClassParams: {
-    construct: function(a,b,msg) {
+    construct: function(a,b,msg, someObj) {
       this.a = a;
       this.b = b;
       this.msg = msg;
+      this.testprop = someObj.testprop;
     },
     eval: function() {
       return this.a+this.b;
@@ -24,7 +25,7 @@ ClassesTest = TestCase("ClassesTest", {
   
   testCreateInstance: function() {
     var baseClass = cc.$class(this.baseClassParams);
-    var newInstance =  new baseClass(3, 4, 'sum is');
+    var newInstance =  new baseClass(3, 4, 'sum is', {testprop: 'asd'});
     assertEquals('testCreateInstance', 'sum is 7', newInstance.doWhatIMean());
   },
   
@@ -33,7 +34,7 @@ ClassesTest = TestCase("ClassesTest", {
     var extendedClassParams = {
       'extends' : baseClass,
       construct: function(a, b, c, msg) {
-        this.parent('construct', a, b, msg);
+        this.parent('construct', a, b, msg, {testprop: 'bsd'});
         this.c = c;
       },
       eval: function() {
